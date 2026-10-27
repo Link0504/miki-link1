@@ -86,11 +86,13 @@ h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-wei
     <div class="eyebrow">OUR PRIVATE WORLD</div>
     <h1>Miki <span class="cross">×</span> Link</h1>
     <div class="sub">只有我们两个人能进来</div>
-    <div class="row">
-      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="你的邮箱">
-      <button class="btn" id="sendLink">发送登录链接</button>
-    </div>
+    <form class="row" id="loginForm" style="flex-direction:column" novalidate>
+      <input id="email" type="email" inputmode="email" autocomplete="username" placeholder="你的邮箱">
+      <input id="password" type="password" autocomplete="current-password" placeholder="密码">
+      <button class="btn" id="signIn" type="submit" style="padding:14px 16px;font-size:14px">登录</button>
+    </form>
     <div class="msg" id="authMsg"></div>
+    <button class="remove" id="sendLink" type="button" style="margin-top:6px">忘了密码？改用邮件链接登录</button>
   </div>
 </div>
 
@@ -173,13 +175,25 @@ h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-wei
   var lbPhoto = null;
 
   /* ---------- 登录 ---------- */
+  $('loginForm').addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    var email = $('email').value.trim(), pw = $('password').value;
+    if (!email || !pw) { $('authMsg').textContent = '请填写邮箱和密码。'; return; }
+    $('signIn').disabled = true; $('authMsg').textContent = '正在登录…';
+    var r = await sb.auth.signInWithPassword({ email: email, password: pw });
+    $('signIn').disabled = false;
+    if (r.error) $('authMsg').textContent = '登录失败：' + (/invalid/i.test(r.error.message || '') ? '邮箱或密码不对。' : errText(r.error));
+    else $('authMsg').textContent = '';
+  });
+
+  // 备用：邮件链接登录（免费邮件额度很少，可能提示 rate limit）
   $('sendLink').onclick = async function () {
     var email = $('email').value.trim();
     if (!email) { $('authMsg').textContent = '请先填写邮箱。'; return; }
     $('sendLink').disabled = true; $('authMsg').textContent = '正在发送…';
     var r = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + location.pathname } });
     $('sendLink').disabled = false;
-    $('authMsg').textContent = r.error ? '发送失败：' + errText(r.error) : '已发送。请打开邮箱，点击里面的登录链接回到这里。没收到的话看看垃圾邮件。';
+    $('authMsg').textContent = r.error ? '发送失败：' + (/rate limit/i.test(r.error.message || '') ? '邮件发送太频繁，请过一小时再试，或用密码登录。' : errText(r.error)) : '已发送。请打开邮箱，点击里面的登录链接回到这里。没收到的话看看垃圾邮件。';
   };
 
   $('logout').onclick = async function () {
