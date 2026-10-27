@@ -1,39 +1,528 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111111"><title>Miki × Link — Our Private World</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0c"><title>Miki × Link — Our Private World</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-:root{color-scheme:dark;--bg:#0b0b0c;--panel:#151516;--panel2:#1d1d1f;--line:#303033;--text:#f5f5f5;--muted:#a3a3a8;--accent:#dedee2}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}.wrap{max-width:1080px;margin:auto;padding:24px 18px 60px}.nav{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:0 0 18px}.brand{font-weight:800;letter-spacing:2px}.tag{font-size:11px;color:var(--muted);letter-spacing:1.5px}.hero{text-align:center;padding:62px 0 46px}.eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted)}h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-weight:650}.cross{color:#777}.sub{color:var(--muted);font-size:14px}.since{margin-top:28px;font-size:11px;letter-spacing:2px;color:var(--muted)}.timer{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}.time{min-width:80px;padding:17px 12px;background:var(--panel);border:1px solid var(--line);border-radius:14px}.time b{font-size:28px;display:block;font-weight:600}.time span{font-size:10px;color:var(--muted);letter-spacing:1px}.btn{background:#f1f1f1;color:#111;border:0;border-radius:9px;padding:11px 15px;font-weight:650;font-size:12px}.btn.ghost{background:transparent;color:var(--text);border:1px solid #454549}.btn.danger{background:#3a2224;color:#ffb9be}.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;min-width:0}.card h2{font-size:16px;margin:0 0 7px;letter-spacing:.3px}.desc{color:var(--muted);font-size:12px;line-height:1.7;margin:0 0 17px}.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.symbol{font-size:20px;color:#aaa}.fields{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.fields input,.fields textarea{flex:1;min-width:120px;background:#0f0f10;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font-size:12px}.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.photo{aspect-ratio:1;background:#202023;border:1px dashed #555;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#aaa;font-size:12px;text-align:center}.photo img{width:100%;height:100%;object-fit:cover}.photo input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}.photo button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:23px;height:23px;background:#111;color:white}.event,.place{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}.event:last-child,.place:last-child{border-bottom:0}.date{background:#242426;border-radius:10px;padding:9px;min-width:55px;text-align:center;color:#eee}.date b{display:block;font-size:17px}.date small,.meta{color:var(--muted);font-size:10px}.itemmain{flex:1;min-width:0}.itemmain strong{font-size:12px}.itemmain small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.remaining{font-size:11px;color:#ddd;white-space:nowrap}.remove{border:0;background:transparent;color:#999}.wide{grid-column:1/-1}.status{display:flex;align-items:center;gap:8px;font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:#777}.note{font-size:11px;line-height:1.7;color:var(--muted);margin:12px 0}.result{font-size:12px;line-height:1.8;word-break:break-word}.footer{text-align:center;color:#737378;font-size:10px;line-height:1.8;margin-top:26px}.empty{color:#777;font-size:12px;padding:8px 0}.quote{text-align:center;color:#bbb;font-size:13px;padding:32px 0 4px}.placeicon{font-size:18px}.link{color:#eee}textarea{resize:vertical}.authline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.authline input{flex:1;min-width:150px;background:#0f0f10;color:#fff;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:12px}@media(max-width:680px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.hero{padding:45px 0 35px}.card{padding:18px}.time{min-width:66px;padding:13px 9px}.time b{font-size:23px}}
+:root{color-scheme:dark;--bg:#0b0b0c;--panel:#151516;--panel2:#1d1d1f;--line:#303033;--text:#f5f5f5;--muted:#a3a3a8;--ok:#9ee2b5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.wrap{max-width:1080px;margin:auto;padding:24px 18px 60px}
+.nav{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:0 0 18px;gap:12px}
+.brand{font-weight:800;letter-spacing:2px}.tag{font-size:11px;color:var(--muted);letter-spacing:1.5px}
+.hero{text-align:center;padding:62px 0 46px}.eyebrow{font-size:11px;letter-spacing:4px;color:var(--muted)}
+h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-weight:650}.cross{color:#777}
+.sub{color:var(--muted);font-size:14px}.since{margin-top:28px;font-size:11px;letter-spacing:2px;color:var(--muted)}
+.timer{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}
+.time{min-width:80px;padding:17px 12px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.time b{font-size:28px;display:block;font-weight:600;font-variant-numeric:tabular-nums}.time span{font-size:10px;color:var(--muted);letter-spacing:1px}
+.btn{background:#f1f1f1;color:#111;border:0;border-radius:9px;padding:11px 15px;font-weight:650;font-size:12px}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid #454549}
+.btn.danger{background:#3a2224;color:#ffb9be}
+.btn:disabled{opacity:.5;cursor:default}
+.actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;min-width:0}
+.card h2{font-size:16px;margin:0 0 7px;letter-spacing:.3px}
+.desc{color:var(--muted);font-size:12px;line-height:1.7;margin:0 0 17px}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.symbol{font-size:20px;color:#aaa}
+.fields{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.fields input,.fields textarea,.authbox input{flex:1;min-width:120px;background:#0f0f10;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font-size:16px}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photo{aspect-ratio:1;background:#202023;border:1px dashed #555;border-radius:10px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#aaa;font-size:12px;text-align:center;padding:0}
+.photo.has{border:1px solid var(--line)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.event,.place{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.event:last-child,.place:last-child{border-bottom:0}
+.date{background:#242426;border-radius:10px;padding:9px;min-width:55px;text-align:center;color:#eee}
+.date b{display:block;font-size:17px}.date small,.meta{color:var(--muted);font-size:10px}
+.itemmain{flex:1;min-width:0}.itemmain strong{font-size:13px;overflow-wrap:anywhere}
+.itemmain small{display:block;color:var(--muted);font-size:11px;margin-top:4px;overflow-wrap:anywhere}
+.remaining{font-size:11px;color:#ddd;white-space:nowrap}
+.remove{border:0;background:transparent;color:#999;font-size:13px;padding:6px}
+.wide{grid-column:1/-1}
+.status{display:flex;align-items:center;gap:8px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#777;flex:none}.dot.on{background:var(--ok)}
+.note{font-size:11px;line-height:1.7;color:var(--muted);margin:12px 0}
+.msg{font-size:12px;line-height:1.7;color:var(--muted);min-height:1.4em;margin-top:10px;word-break:break-word}
+.footer{text-align:center;color:#737378;font-size:10px;line-height:1.8;margin-top:26px}
+.empty{color:#777;font-size:12px;padding:8px 0}
+.quote{text-align:center;color:#bbb;font-size:13px;padding:32px 0 4px}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.whobox{background:#0f0f10;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;line-height:1.7;min-width:0}
+.whobox b{display:block;font-size:11px;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px;font-weight:600}
+.whobox.off{color:var(--muted)}
+#map{height:280px;border-radius:12px;border:1px solid var(--line);margin-top:12px;background:#111;overflow:hidden}
+.leaflet-tile{filter:grayscale(1) invert(1) contrast(.92) brightness(.95)}
+.leaflet-container{font-family:inherit}
+.leaflet-control-attribution{background:rgba(0,0,0,.6)!important;color:#aaa!important}
+.leaflet-control-attribution a{color:#ccc!important}
+.leaflet-tooltip{background:#111;color:#fff;border:1px solid #555;box-shadow:none}
+.leaflet-tooltip-top:before{border-top-color:#555}
+
+/* login */
+.auth{position:fixed;inset:0;z-index:30;background:var(--bg);display:grid;place-items:center;padding:24px}
+.authbox{width:100%;max-width:380px;text-align:center}
+.authbox h1{font-size:44px;margin:12px 0 6px}
+.authbox .row{display:flex;gap:8px;margin-top:22px}
+.authbox .btn{padding:0 16px;white-space:nowrap}
+.authbox .msg{text-align:left}
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px}
+.lb img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:6px}
+.lb .bar{display:flex;gap:10px}
+[hidden]{display:none!important}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.hero{padding:45px 0 35px}.card{padding:18px}.time{min-width:66px;padding:13px 9px}.time b{font-size:23px}.who{grid-template-columns:1fr}}
 </style>
 </head>
-<body><main class="wrap">
-<nav class="nav"><div class="brand">M / L</div><div class="tag">OUR PRIVATE WORLD</div></nav>
-<header class="hero"><div class="eyebrow">TWO PEOPLE · ONE STORY</div><h1>Miki <span class="cross">×</span> Link</h1><div class="sub">Every day, a little more us.</div><div class="since">SINCE AUGUST 29, 2026</div>
+<body>
+
+<!-- 登录 -->
+<div class="auth" id="auth">
+  <div class="authbox">
+    <div class="eyebrow">OUR PRIVATE WORLD</div>
+    <h1>Miki <span class="cross">×</span> Link</h1>
+    <div class="sub">只有我们两个人能进来</div>
+    <div class="row">
+      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="你的邮箱">
+      <button class="btn" id="sendLink">发送登录链接</button>
+    </div>
+    <div class="msg" id="authMsg"></div>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+<nav class="nav"><div class="brand">M / L</div><div class="tag">OUR PRIVATE WORLD</div><button class="btn ghost" id="logout">退出</button></nav>
+
+<header class="hero"><div class="eyebrow">TWO PEOPLE · ONE STORY</div><h1>Miki <span class="cross">×</span> Link</h1><div class="sub">Every day, a little more us.</div>
+<div class="since" id="sinceLine">SINCE —</div>
 <div class="timer"><div class="time"><b id="days">—</b><span>DAYS</span></div><div class="time"><b id="hours">—</b><span>HOURS</span></div><div class="time"><b id="mins">—</b><span>MINUTES</span></div><div class="time"><b id="secs">—</b><span>SECONDS</span></div></div>
-<div class="sub" id="timerLabel">每一天，都值得被记住。</div><div class="actions"><button class="btn ghost" id="editStart">修改恋爱日期</button></div></header>
+<div class="sub" id="timerLabel">每一天，都值得被记住。</div>
+<div class="actions"><button class="btn ghost" id="editStart">修改恋爱日期</button><span id="startEdit" hidden><input id="startInput" type="date" style="background:#0f0f10;color:#fff;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:16px"> <button class="btn" id="saveStart">保存</button></span></div>
+</header>
+
 <div class="grid">
-<section class="card"><div class="head"><h2>OUR PHOTOS / 我们的相册</h2><span class="symbol">▧</span></div><p class="desc">把值得珍藏的日常和旅行留在这里。当前演示模式照片保存在本机；接入云端后才能跨设备同步。</p><div class="photos" id="photos"></div></section>
-<section class="card"><div class="head"><h2>OUR DAYS / 重要日期</h2><span class="symbol">◷</span></div><p class="desc">生日、纪念日，以及想一起期待的日子。</p><div id="events"></div><div class="fields"><input id="eventName" placeholder="纪念日名称"><input id="eventDate" type="date" aria-label="纪念日日期"></div><div class="fields"><button class="btn" id="addEvent">＋ 添加日期</button></div></section>
-<section class="card"><div class="head"><h2>OUR PLACES / 我们去过的地方</h2><span class="symbol">⌖</span></div><p class="desc">把你们一起走过的城市、餐厅和旅行目的地记下来。</p><div id="places"></div><div class="fields"><input id="placeName" placeholder="地点名称"><input id="placeNote" placeholder="回忆或日期（可选）"></div><div class="fields"><button class="btn" id="addPlace">＋ 添加地点</button></div></section>
-<section class="card"><div class="head"><h2>OUR LOCATION / 彼此的位置</h2><span class="symbol">◎</span></div><p class="desc">位置分享必须由双方各自在自己的设备上授权开启。</p><div class="status"><span class="dot" id="locDot"></span><span id="locStatus">未开启位置分享</span></div><p class="note">当前版本只可获取这台设备的位置，不会发送给 Miki。启用跨设备实时共享前，必须配置登录、数据库访问规则和位置共享开关。</p><button class="btn" id="getLoc">获取我此刻的位置</button><div class="result" id="locResult"></div></section>
-<section class="card wide"><div class="head"><h2>OUR PROMISE / 我们的小约定</h2><span class="symbol">—</span></div><p class="desc">写下想一起遵守的约定。</p><textarea id="promise" rows="3" style="width:100%;background:#0f0f10;color:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;font-size:12px" placeholder="有问题就好好沟通，认真听对方说话……"></textarea><div class="fields"><button class="btn ghost" id="savePromise">保存约定</button><span class="meta" id="promiseStatus"></span></div></section>
-</div><div class="quote">“以后每个值得纪念的日子，都有我们。”</div><footer class="footer">Miki × Link · MADE WITH LOVE<br>本页面目前是可部署的静态初始版；云端同步与双向实时定位尚需配置后端。</footer>
+<section class="card"><div class="head"><h2>OUR PHOTOS / 我们的相册</h2><span class="symbol">▧</span></div>
+<p class="desc">照片保存在云端，两个人的手机都能看到，也都能添加。</p>
+<div class="photos" id="photos"></div><div class="msg" id="photoMsg"></div></section>
+
+<section class="card"><div class="head"><h2>OUR DAYS / 重要日期</h2><span class="symbol">◷</span></div>
+<p class="desc">生日、纪念日，以及想一起期待的日子（每年重复倒数）。</p>
+<div id="events"></div>
+<div class="fields"><input id="eventName" placeholder="纪念日名称" maxlength="60"><input id="eventDate" type="date" aria-label="纪念日日期"></div>
+<div class="fields"><button class="btn" id="addEvent">＋ 添加日期</button></div><div class="msg" id="eventMsg"></div></section>
+
+<section class="card"><div class="head"><h2>OUR PLACES / 我们去过的地方</h2><span class="symbol">⌖</span></div>
+<p class="desc">把你们一起走过的城市、餐厅和旅行目的地记下来。</p>
+<div id="places"></div>
+<div class="fields"><input id="placeName" placeholder="地点名称" maxlength="60"><input id="placeNote" placeholder="回忆或日期（可选）" maxlength="200"></div>
+<div class="fields"><button class="btn" id="addPlace">＋ 添加地点</button></div><div class="msg" id="placeMsg"></div></section>
+
+<section class="card"><div class="head"><h2>OUR PROMISE / 我们的小约定</h2><span class="symbol">—</span></div>
+<p class="desc">写下想一起遵守的约定，两边同步。</p>
+<textarea id="promise" rows="5" style="width:100%;background:#0f0f10;color:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;font-size:16px;resize:vertical" placeholder="有问题就好好沟通，认真听对方说话……"></textarea>
+<div class="fields"><button class="btn ghost" id="savePromise">保存约定</button><span class="meta" id="promiseStatus" style="align-self:center"></span></div></section>
+
+<section class="card wide"><div class="head"><h2>OUR LOCATION / 彼此的位置</h2><span class="symbol">◎</span></div>
+<p class="desc">位置分享由你自己决定：开启后，对方才能看到你的位置；随时可以关闭，关闭后你的位置会从云端清除。</p>
+<div class="status"><span class="dot" id="locDot"></span><span id="locStatus">未开启位置分享</span></div>
+<div class="who">
+  <div class="whobox" id="meBox"><b>我</b>未开启</div>
+  <div class="whobox off" id="otherBox"><b>对方</b>对方未开启位置分享</div>
+</div>
+<div class="fields"><button class="btn" id="shareBtn">开启位置分享</button></div>
+<p class="note">网页只能在页面打开时更新位置。手机锁屏或切到后台后，位置会停止更新，对方会看到“最后更新于几分钟前”。</p>
+<div class="msg" id="locMsg"></div>
+<div id="map" hidden></div></section>
+</div>
+
+<div class="quote">“以后每个值得纪念的日子，都有我们。”</div>
+<footer class="footer">Miki × Link · MADE WITH LOVE<br><span id="whoami"></span></footer>
 </main>
+
+<div class="lb" id="lb" hidden>
+  <img id="lbImg" alt="Couple memory">
+  <div class="bar"><button class="btn ghost" id="lbClose">关闭</button><button class="btn danger" id="lbDel">删除这张照片</button></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-const $=id=>document.getElementById(id), KEY='ml2026_';
-let start=localStorage.getItem(KEY+'start')||'2026-08-29', events=JSON.parse(localStorage.getItem(KEY+'events')||'[]'), places=JSON.parse(localStorage.getItem(KEY+'places')||'[]'), photos=JSON.parse(localStorage.getItem(KEY+'photos')||'[]');
-function tick(){const t=new Date(start+'T00:00:00'),d=Math.max(0,Date.now()-t.getTime());$('days').textContent=Math.floor(d/86400000).toLocaleString();$('hours').textContent=String(Math.floor(d/3600000)%24).padStart(2,'0');$('mins').textContent=String(Math.floor(d/60000)%60).padStart(2,'0');$('secs').textContent=String(Math.floor(d/1000)%60).padStart(2,'0');$('timerLabel').textContent='从 '+start+' 开始，正在一起创造回忆。'}
-$('editStart').onclick=()=>{let v=prompt('恋爱开始日期（YYYY-MM-DD）',start);if(v&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&!isNaN(new Date(v).getTime())){start=v;localStorage.setItem(KEY+'start',v);tick()}};
-function saveEvents(){localStorage.setItem(KEY+'events',JSON.stringify(events));renderEvents()}
-function renderEvents(){$('events').innerHTML='';if(!events.length)$('events').innerHTML='<div class="empty">还没有日期。添加一个重要的日子吧。</div>';events.sort((a,b)=>a.date.localeCompare(b.date)).forEach((e,i)=>{let d=new Date(e.date+'T00:00:00'),now=new Date();now.setHours(0,0,0,0);let next=new Date(e.date+'T00:00:00');next.setFullYear(now.getFullYear());if(next<now)next.setFullYear(now.getFullYear()+1);let left=Math.ceil((next-now)/86400000),el=document.createElement('div');el.className='event';el.innerHTML='<div class="date"><b>'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')+'</b><small>'+d.getFullYear()+'</small></div><div class="itemmain"><strong></strong><small>'+e.date+'</small></div><span class="remaining">'+(left===0?'TODAY':'IN '+left+' DAYS')+'</span><button class="remove">×</button>';el.querySelector('strong').textContent=e.name;el.querySelector('button').onclick=()=>{events.splice(i,1);saveEvents()};$('events').append(el)})}
-$('addEvent').onclick=()=>{let n=$('eventName').value.trim(),d=$('eventDate').value;if(!n||!d)return alert('请填写名称和日期');events.push({name:n,date:d});saveEvents();$('eventName').value='';$('eventDate').value=''};
-function savePlaces(){localStorage.setItem(KEY+'places',JSON.stringify(places));renderPlaces()}
-function renderPlaces(){$('places').innerHTML='';if(!places.length)$('places').innerHTML='<div class="empty">你们的共同地图还空着。</div>';places.forEach((p,i)=>{let el=document.createElement('div');el.className='place';el.innerHTML='<span class="placeicon">⌖</span><div class="itemmain"><strong></strong><small></small></div><button class="remove">删除</button>';el.querySelector('strong').textContent=p.name;el.querySelector('small').textContent=p.note||'一起留下的回忆';el.querySelector('button').onclick=()=>{places.splice(i,1);savePlaces()};$('places').append(el)})}
-$('addPlace').onclick=()=>{let n=$('placeName').value.trim(),note=$('placeNote').value.trim();if(!n)return alert('请填写地点名称');places.push({name:n,note});savePlaces();$('placeName').value='';$('placeNote').value=''};
-function renderPhotos(){$('photos').innerHTML='';photos.forEach((src,i)=>{let el=document.createElement('div');el.className='photo';let im=document.createElement('img');im.src=src;im.alt='Couple memory';let b=document.createElement('button');b.textContent='×';b.onclick=()=>{photos.splice(i,1);localStorage.setItem(KEY+'photos',JSON.stringify(photos));renderPhotos()};el.append(im,b);$('photos').append(el)});if(photos.length<12){let l=document.createElement('label');l.className='photo';l.innerHTML='＋<br>添加照片';let inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=true;inp.onchange=()=>{[...inp.files].slice(0,12-photos.length).forEach(f=>{let r=new FileReader();r.onload=()=>{photos.push(r.result);try{localStorage.setItem(KEY+'photos',JSON.stringify(photos))}catch(e){alert('照片过大，请减少照片数量或先配置云端存储。')}renderPhotos()};r.readAsDataURL(f)})};l.append(inp);$('photos').append(l)}}
-$('getLoc').onclick=()=>{if(!navigator.geolocation)return $('locResult').textContent='此浏览器不支持定位。';if(!isSecureContext)return $('locResult').textContent='请在 HTTPS 网站中打开定位功能。';$('locStatus').textContent='等待设备授权…';navigator.geolocation.getCurrentPosition(p=>{let a=p.coords.latitude,b=p.coords.longitude;$('locDot').style.background='#9ee2b5';$('locStatus').textContent='已获取本设备位置';$('locResult').innerHTML='纬度：'+a.toFixed(5)+'<br>经度：'+b.toFixed(5)+'<br><a class="link" target="_blank" rel="noopener" href="https://maps.google.com/?q='+a+','+b+'">在地图中查看</a><br><span class="meta">位置仅在此设备显示，未共享给另一方。</span>'},e=>{$('locStatus').textContent='定位未成功';$('locResult').textContent=e.message},{enableHighAccuracy:true,timeout:12000,maximumAge:0})};
-$('promise').value=localStorage.getItem(KEY+'promise')||'';$('savePromise').onclick=()=>{localStorage.setItem(KEY+'promise',$('promise').value);$('promiseStatus').textContent='已保存在此设备'};
-tick();setInterval(tick,1000);renderEvents();renderPlaces();renderPhotos();
-</script></body></html>
+(function () {
+  var SUPABASE_URL = 'https://acbcysvvzhxlxyryxvcq.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_sjXu7YMz7qfaJWvofofmPQ_fg-rS1Li';
+  var STALE_MS = 15 * 60 * 1000;
+
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function errText(e) { return (e && (e.message || e.error_description)) || '请稍后再试'; }
+
+  if (!window.supabase) { $('authMsg').textContent = '加载失败：无法连接服务，请检查网络后刷新。'; return; }
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var me = null, entering = false, channel = null;
+  var state = { start: '2026-08-29', promise: '' };
+  var events = [], places = [], photos = [], locs = {};
+  var urlCache = {};
+  var watchId = null, sharing = false, lastSent = 0, lastPos = null;
+  var map = null, meMarker = null, otherMarker = null;
+  var lbPhoto = null;
+
+  /* ---------- 登录 ---------- */
+  $('sendLink').onclick = async function () {
+    var email = $('email').value.trim();
+    if (!email) { $('authMsg').textContent = '请先填写邮箱。'; return; }
+    $('sendLink').disabled = true; $('authMsg').textContent = '正在发送…';
+    var r = await sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + location.pathname } });
+    $('sendLink').disabled = false;
+    $('authMsg').textContent = r.error ? '发送失败：' + errText(r.error) : '已发送。请打开邮箱，点击里面的登录链接回到这里。没收到的话看看垃圾邮件。';
+  };
+
+  $('logout').onclick = async function () {
+    try { await stopSharing(); } catch (e) {}
+    await sb.auth.signOut();
+  };
+
+  sb.auth.onAuthStateChange(function (_e, session) {
+    setTimeout(function () {
+      if (session && session.user) enter(session.user); else leave();
+    }, 0);
+  });
+  sb.auth.getSession().then(function (r) {
+    if (r.data && r.data.session) enter(r.data.session.user);
+  });
+
+  async function enter(user) {
+    if (entering || (me && me.id === user.id)) return;
+    entering = true;
+    try {
+      var r = await sb.from('site_state').select('*').eq('id', 1).maybeSingle();
+      if (r.error || !r.data) {
+        $('authMsg').textContent = '这个邮箱（' + (user.email || '') + '）没有权限访问。请用你们自己的邮箱登录。';
+        await sb.auth.signOut();
+        return;
+      }
+      me = user;
+      state.start = r.data.start_date; state.promise = r.data.promise || '';
+      $('auth').hidden = true; $('app').hidden = false;
+      $('whoami').textContent = '已登录：' + (user.email || '');
+      renderHero(); $('promise').value = state.promise;
+      await Promise.all([loadEvents(), loadPlaces(), loadPhotos(), loadLocs()]);
+      subscribe();
+      var mine = locs[me.id];
+      if (mine && mine.sharing) startWatch();
+    } catch (e) {
+      $('authMsg').textContent = '进入失败：' + errText(e);
+    } finally { entering = false; }
+  }
+  function leave() {
+    me = null; $('app').hidden = true; $('auth').hidden = false;
+    if (channel) { sb.removeChannel(channel); channel = null; }
+    if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
+    watchId = null; sharing = false;
+  }
+
+  /* ---------- 计时 ---------- */
+  function startDate() { var p = state.start.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+  function tick() {
+    var d = Math.max(0, Date.now() - startDate().getTime());
+    $('days').textContent = Math.floor(d / 86400000).toLocaleString();
+    $('hours').textContent = pad(Math.floor(d / 3600000) % 24);
+    $('mins').textContent = pad(Math.floor(d / 60000) % 60);
+    $('secs').textContent = pad(Math.floor(d / 1000) % 60);
+  }
+  function renderHero() {
+    $('sinceLine').textContent = 'SINCE ' + state.start.replace(/-/g, '.');
+    $('timerLabel').textContent = '从 ' + state.start + ' 开始，正在一起创造回忆。';
+    tick();
+  }
+  setInterval(function () { if (me) { tick(); renderLocations(); } }, 1000);
+
+  $('editStart').onclick = function () { $('startInput').value = state.start; $('startEdit').hidden = !$('startEdit').hidden; };
+  $('saveStart').onclick = async function () {
+    var v = $('startInput').value; if (!v) return;
+    var r = await sb.from('site_state').update({ start_date: v, updated_at: new Date().toISOString() }).eq('id', 1);
+    if (r.error) { $('timerLabel').textContent = '保存失败：' + errText(r.error); return; }
+    state.start = v; renderHero(); $('startEdit').hidden = true;
+  };
+
+  /* ---------- 重要日期 ---------- */
+  async function loadEvents() {
+    var r = await sb.from('events').select('*').order('event_date');
+    if (r.error) { $('eventMsg').textContent = '读取失败：' + errText(r.error); return; }
+    events = r.data || []; renderEvents();
+  }
+  function renderEvents() {
+    var box = $('events'); box.textContent = '';
+    if (!events.length) box.appendChild(el('div', 'empty', '还没有日期。添加一个重要的日子吧。'));
+    var now = new Date(); now.setHours(0, 0, 0, 0);
+    events.map(function (e) {
+      var p = e.event_date.split('-').map(Number);
+      var next = new Date(now.getFullYear(), p[1] - 1, p[2]);
+      if (next < now) next = new Date(now.getFullYear() + 1, p[1] - 1, p[2]);
+      return { e: e, p: p, left: Math.round((next - now) / 86400000) };
+    }).sort(function (a, b) { return a.left - b.left; }).forEach(function (x) {
+      var row = el('div', 'event');
+      var date = el('div', 'date'); date.appendChild(el('b', null, pad(x.p[1]) + '/' + pad(x.p[2]))); date.appendChild(el('small', null, String(x.p[0])));
+      var main = el('div', 'itemmain'); main.appendChild(el('strong', null, x.e.name)); main.appendChild(el('small', null, x.e.event_date));
+      row.append(date, main, el('span', 'remaining', x.left === 0 ? 'TODAY' : 'IN ' + x.left + ' DAYS'));
+      var rm = el('button', 'remove', '×'); rm.type = 'button'; rm.setAttribute('aria-label', '删除');
+      rm.onclick = async function () { var r = await sb.from('events').delete().eq('id', x.e.id); if (r.error) $('eventMsg').textContent = '删除失败：' + errText(r.error); loadEvents(); };
+      row.appendChild(rm); box.appendChild(row);
+    });
+  }
+  $('addEvent').onclick = async function () {
+    var n = $('eventName').value.trim(), d = $('eventDate').value;
+    if (!n || !d) { $('eventMsg').textContent = '请填写名称和日期。'; return; }
+    var r = await sb.from('events').insert({ name: n, event_date: d });
+    if (r.error) { $('eventMsg').textContent = '添加失败：' + errText(r.error); return; }
+    $('eventMsg').textContent = ''; $('eventName').value = ''; $('eventDate').value = ''; loadEvents();
+  };
+
+  /* ---------- 地点 ---------- */
+  async function loadPlaces() {
+    var r = await sb.from('places').select('*').order('created_at');
+    if (r.error) { $('placeMsg').textContent = '读取失败：' + errText(r.error); return; }
+    places = r.data || []; renderPlaces();
+  }
+  function renderPlaces() {
+    var box = $('places'); box.textContent = '';
+    if (!places.length) box.appendChild(el('div', 'empty', '你们的共同地图还空着。'));
+    places.forEach(function (p) {
+      var row = el('div', 'place'); row.appendChild(el('span', null, '⌖'));
+      var main = el('div', 'itemmain'); main.appendChild(el('strong', null, p.name)); main.appendChild(el('small', null, p.note || '一起留下的回忆'));
+      row.appendChild(main);
+      var rm = el('button', 'remove', '删除'); rm.type = 'button';
+      rm.onclick = async function () { var r = await sb.from('places').delete().eq('id', p.id); if (r.error) $('placeMsg').textContent = '删除失败：' + errText(r.error); loadPlaces(); };
+      row.appendChild(rm); box.appendChild(row);
+    });
+  }
+  $('addPlace').onclick = async function () {
+    var n = $('placeName').value.trim(), note = $('placeNote').value.trim();
+    if (!n) { $('placeMsg').textContent = '请填写地点名称。'; return; }
+    var r = await sb.from('places').insert({ name: n, note: note });
+    if (r.error) { $('placeMsg').textContent = '添加失败：' + errText(r.error); return; }
+    $('placeMsg').textContent = ''; $('placeName').value = ''; $('placeNote').value = ''; loadPlaces();
+  };
+
+  /* ---------- 约定 ---------- */
+  $('savePromise').onclick = async function () {
+    var r = await sb.from('site_state').update({ promise: $('promise').value, updated_at: new Date().toISOString() }).eq('id', 1);
+    $('promiseStatus').textContent = r.error ? '保存失败：' + errText(r.error) : '已保存并同步';
+    if (!r.error) state.promise = $('promise').value;
+  };
+
+  /* ---------- 照片 ---------- */
+  async function loadPhotos() {
+    var r = await sb.from('photos').select('*').order('created_at', { ascending: false });
+    if (r.error) { $('photoMsg').textContent = '读取失败：' + errText(r.error); return; }
+    photos = r.data || [];
+    var need = photos.map(function (p) { return p.path; }).filter(function (p) { return !urlCache[p]; });
+    if (need.length) {
+      var s = await sb.storage.from('photos').createSignedUrls(need, 3600);
+      if (s.data) s.data.forEach(function (x) { if (x.signedUrl) urlCache[x.path] = x.signedUrl; });
+    }
+    renderPhotos();
+  }
+  function renderPhotos() {
+    var box = $('photos'); box.textContent = '';
+    var add = el('label', 'photo'); add.appendChild(document.createTextNode('＋')); add.appendChild(document.createElement('br')); add.appendChild(document.createTextNode('添加照片'));
+    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
+    inp.onchange = function () { uploadFiles(Array.prototype.slice.call(inp.files)); inp.value = ''; };
+    add.appendChild(inp); box.appendChild(add);
+    photos.forEach(function (p) {
+      var b = el('button', 'photo has'); b.type = 'button'; b.setAttribute('aria-label', '查看照片');
+      var url = urlCache[p.path];
+      if (url) { var im = document.createElement('img'); im.src = url; im.alt = 'Couple memory'; im.loading = 'lazy'; b.appendChild(im); }
+      b.onclick = function () { openLb(p); };
+      box.appendChild(b);
+    });
+  }
+  function loadImg(file) {
+    return new Promise(function (res, rej) {
+      var u = URL.createObjectURL(file), i = new Image();
+      i.onload = function () { URL.revokeObjectURL(u); res(i); };
+      i.onerror = function () { URL.revokeObjectURL(u); rej(new Error('无法读取这张图片')); };
+      i.src = u;
+    });
+  }
+  async function toBlob(file, max, q) {
+    var img = await loadImg(file);
+    var s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    var c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return new Promise(function (res, rej) { c.toBlob(function (b) { b ? res(b) : rej(new Error('图片处理失败')); }, 'image/jpeg', q); });
+  }
+  async function uploadFiles(files) {
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (!f.type || f.type.indexOf('image/') !== 0) continue;
+      $('photoMsg').textContent = '正在上传第 ' + (i + 1) + ' / ' + files.length + ' 张…';
+      try {
+        var blob = await toBlob(f, 1600, 0.85);
+        var path = me.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+        var up = await sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg' });
+        if (up.error) throw up.error;
+        var ins = await sb.from('photos').insert({ path: path });
+        if (ins.error) { await sb.storage.from('photos').remove([path]); throw ins.error; }
+      } catch (e) { $('photoMsg').textContent = '这张没能上传：' + errText(e); await loadPhotos(); return; }
+    }
+    $('photoMsg').textContent = '上传完成，已同步。';
+    await loadPhotos();
+  }
+  function openLb(p) {
+    lbPhoto = p; $('lbImg').src = urlCache[p.path] || ''; $('lb').hidden = false;
+  }
+  function closeLb() { $('lb').hidden = true; $('lbImg').removeAttribute('src'); lbPhoto = null; }
+  $('lbClose').onclick = closeLb;
+  $('lb').onclick = function (e) { if (e.target === $('lb')) closeLb(); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('lb').hidden) closeLb(); });
+  $('lbDel').onclick = async function () {
+    if (!lbPhoto) return;
+    if (!confirm('确定删除这张照片吗？两个人都会看不到它。')) return;
+    var p = lbPhoto; closeLb();
+    var r = await sb.from('photos').delete().eq('id', p.id);
+    if (r.error) { $('photoMsg').textContent = '删除失败：' + errText(r.error); return; }
+    await sb.storage.from('photos').remove([p.path]);
+    delete urlCache[p.path]; loadPhotos();
+  };
+
+  /* ---------- 位置 ---------- */
+  function dist(a, b) {
+    var R = 6371000, r = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+    var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+  }
+  function fmtDist(m) { return m < 1000 ? Math.round(m) + ' 米' : (m / 1000).toFixed(m < 10000 ? 1 : 0) + ' 公里'; }
+  function ago(iso) {
+    var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+    if (s < 60) return s + ' 秒前'; if (s < 3600) return Math.floor(s / 60) + ' 分钟前';
+    if (s < 86400) return Math.floor(s / 3600) + ' 小时前'; return Math.floor(s / 86400) + ' 天前';
+  }
+  async function loadLocs() {
+    var r = await sb.from('locations').select('*');
+    if (r.error) { $('locMsg').textContent = '读取位置失败：' + errText(r.error); return; }
+    locs = {}; (r.data || []).forEach(function (x) { locs[x.user_id] = x; });
+    renderLocations();
+  }
+  function valid(x) { return x && x.sharing && x.lat != null && x.lng != null; }
+  function renderLocations() {
+    if (!me) return;
+    var mine = locs[me.id], other = null;
+    Object.keys(locs).forEach(function (k) { if (k !== me.id) other = locs[k]; });
+    var on = !!(mine && mine.sharing) || sharing;
+    $('locDot').className = 'dot' + (on ? ' on' : '');
+    $('locStatus').textContent = on ? '你正在分享位置' : '未开启位置分享';
+    $('shareBtn').textContent = on ? '停止分享我的位置' : '开启位置分享';
+    $('shareBtn').className = on ? 'btn danger' : 'btn';
+
+    var meBox = $('meBox'); meBox.textContent = ''; meBox.appendChild(el('b', null, '我'));
+    meBox.appendChild(document.createTextNode(valid(mine) ? mine.lat.toFixed(5) + ', ' + mine.lng.toFixed(5) + '（' + ago(mine.updated_at) + '）' : '未开启'));
+    var ob = $('otherBox'); ob.textContent = ''; ob.appendChild(el('b', null, '对方'));
+    var otherOk = valid(other), stale = otherOk && Date.now() - new Date(other.updated_at).getTime() > STALE_MS;
+    ob.className = 'whobox' + (otherOk && !stale ? '' : ' off');
+    if (!otherOk) ob.appendChild(document.createTextNode('对方未开启位置分享'));
+    else {
+      var t = other.lat.toFixed(5) + ', ' + other.lng.toFixed(5) + '（' + (stale ? '已过期，最后更新于 ' : '更新于 ') + ago(other.updated_at) + '）';
+      if (valid(mine)) t += '。你们相距 ' + fmtDist(dist(mine, other));
+      ob.appendChild(document.createTextNode(t));
+    }
+    drawMap(valid(mine) ? mine : null, otherOk ? other : null);
+  }
+  function drawMap(a, b) {
+    var box = $('map');
+    if (typeof L === 'undefined' || (!a && !b)) { box.hidden = true; return; }
+    var wasHidden = box.hidden; box.hidden = false;
+    if (!map) {
+      map = L.map('map', { zoomControl: true });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+      map.setView([0, 0], 2);
+    }
+    if (wasHidden) map.invalidateSize();
+    function mk(old, pt, label, fill, stroke) {
+      if (!pt) { if (old) map.removeLayer(old); return null; }
+      if (!old) old = L.circleMarker([pt.lat, pt.lng], { radius: 9, weight: 3, color: stroke, fillColor: fill, fillOpacity: 1 }).addTo(map).bindTooltip(label, { permanent: true, direction: 'top', offset: [0, -8] });
+      else old.setLatLng([pt.lat, pt.lng]);
+      return old;
+    }
+    meMarker = mk(meMarker, a, '我', '#ffffff', '#111111');
+    otherMarker = mk(otherMarker, b, 'TA', '#111111', '#ffffff');
+    var key = (a ? a.lat.toFixed(4) + a.lng.toFixed(4) : '') + '|' + (b ? b.lat.toFixed(4) + b.lng.toFixed(4) : '');
+    if (box.dataset.key !== key) {
+      box.dataset.key = key;
+      if (a && b) map.fitBounds([[a.lat, a.lng], [b.lat, b.lng]], { padding: [40, 40], maxZoom: 16 });
+      else { var p = a || b; map.setView([p.lat, p.lng], 15); }
+    }
+  }
+
+  async function saveMyLoc(row) {
+    var r = await sb.from('locations').upsert(Object.assign({ user_id: me.id, updated_at: new Date().toISOString() }, row));
+    if (r.error) throw r.error;
+    locs[me.id] = Object.assign({ user_id: me.id, updated_at: new Date().toISOString() }, row);
+    renderLocations();
+  }
+  async function onPos(p) {
+    var c = p.coords, now = Date.now();
+    var pt = { lat: c.latitude, lng: c.longitude };
+    if (lastPos && now - lastSent < 20000 && dist(lastPos, pt) < 25) return;
+    lastSent = now; lastPos = pt;
+    try { await saveMyLoc({ sharing: true, lat: pt.lat, lng: pt.lng, accuracy: c.accuracy }); $('locMsg').textContent = ''; }
+    catch (e) { $('locMsg').textContent = '位置同步失败：' + errText(e); }
+  }
+  function onPosErr(e) {
+    var m = e && e.code === 1 ? '没有获得定位权限。请在手机或浏览器设置里允许此网站使用位置，然后重试。' : '暂时无法获取位置：' + (e && e.message ? e.message : '请稍后再试');
+    $('locMsg').textContent = m;
+    if (e && e.code === 1) stopSharing().catch(function () {});
+  }
+  function startWatch() {
+    if (watchId != null) return;
+    if (!navigator.geolocation) { $('locMsg').textContent = '此浏览器不支持定位。'; return; }
+    if (!window.isSecureContext) { $('locMsg').textContent = '请在 HTTPS 网址中打开定位功能。'; return; }
+    sharing = true;
+    watchId = navigator.geolocation.watchPosition(onPos, onPosErr, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
+    renderLocations();
+  }
+  async function stopSharing() {
+    if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
+    watchId = null; sharing = false; lastPos = null;
+    if (me) await saveMyLoc({ sharing: false, lat: null, lng: null, accuracy: null });
+    renderLocations();
+  }
+  $('shareBtn').onclick = async function () {
+    var on = sharing || (locs[me.id] && locs[me.id].sharing);
+    if (on) { try { await stopSharing(); $('locMsg').textContent = '已停止分享，你的位置已从云端清除。'; } catch (e) { $('locMsg').textContent = '停止失败：' + errText(e); } return; }
+    if (!confirm('开启后，对方可以看到你的实时位置，直到你点“停止分享”。要开启吗？')) return;
+    $('locMsg').textContent = '等待设备授权…';
+    startWatch();
+  };
+
+  /* ---------- 实时同步 ---------- */
+  function subscribe() {
+    if (channel) sb.removeChannel(channel);
+    channel = sb.channel('ml-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'locations' }, function () { loadLocs(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'photos' }, function () { loadPhotos(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, function () { loadEvents(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'places' }, function () { loadPlaces(); })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'site_state' }, async function () {
+        var r = await sb.from('site_state').select('*').eq('id', 1).maybeSingle();
+        if (r.data) {
+          state.start = r.data.start_date; renderHero();
+          if (document.activeElement !== $('promise')) { state.promise = r.data.promise || ''; $('promise').value = state.promise; }
+        }
+      })
+      .subscribe();
+  }
+  // 兜底：实时连接断开时，每 30 秒补刷一次位置
+  setInterval(function () { if (me && !document.hidden) loadLocs(); }, 30000);
+  document.addEventListener('visibilitychange', function () { if (me && !document.hidden) { loadLocs(); loadPhotos(); } });
+})();
+</script>
+</body>
+</html>
