@@ -60,7 +60,7 @@ h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-wei
 .whobox{background:#0f0f10;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px;line-height:1.7;min-width:0}
 .whobox b{display:block;font-size:11px;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px;font-weight:600}
 .whobox.off{color:var(--muted)}
-#map{height:280px;border-radius:12px;border:1px solid var(--line);margin-top:12px;background:#111;overflow:hidden}
+#map{isolation:isolate;height:280px;border-radius:12px;border:1px solid var(--line);margin-top:12px;background:#111;overflow:hidden}
 .leaflet-tile{filter:grayscale(1) invert(1) contrast(.92) brightness(.95)}
 .leaflet-container{font-family:inherit}
 .leaflet-control-attribution{background:rgba(0,0,0,.6)!important;color:#aaa!important}
@@ -80,6 +80,26 @@ h1{font-size:clamp(40px,8vw,76px);letter-spacing:-2px;margin:18px 0 8px;font-wei
 .lb img,.lb video{max-width:100%;max-height:78vh;object-fit:contain;border-radius:6px;background:#000}
 .lb .bar{display:flex;gap:10px}
 [hidden]{display:none!important}
+.catfab{position:fixed;z-index:50;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:50%;padding:0;border:2px solid #f1f1f1;background:#202023;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+.catfab img{width:100%;height:100%;object-fit:cover;display:block}
+.catpanel{position:fixed;z-index:55;inset:0;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.cathead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.cathead img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+.cathead div{flex:1;min-width:0}.cathead b{display:block;font-size:15px}.cathead small{color:var(--muted);font-size:11px}
+.catlog{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.cl-row{display:flex;gap:8px;align-items:flex-end;max-width:88%;align-self:flex-start}
+.cl-row img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex:none}
+.cl-row.mine{align-self:flex-end}
+.cl-bub{background:#242426;border-radius:14px;padding:9px 13px;font-size:14px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+.cl-row.mine .cl-bub{background:#f1f1f1;color:#111}
+.cl-act{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.cl-act button{background:transparent;color:var(--text);border:1px solid #6a6a6e;border-radius:999px;padding:5px 12px;font-size:12px}
+.catchips{display:flex;gap:6px;overflow-x:auto;padding:8px 16px 4px;flex:none}
+.catchips button{flex:none;background:#0f0f10;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12px;white-space:nowrap}
+.catform{display:flex;gap:8px;padding:8px 16px 14px;flex:none}
+.catform input{flex:1;min-width:0;background:#0f0f10;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font-size:16px}
+.catnote{font-size:10px;color:var(--muted);text-align:center;padding:0 16px 8px}
+@media(min-width:681px){.catpanel{inset:auto;right:20px;bottom:20px;width:380px;height:min(600px,calc(100vh - 40px));border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:0}.catfab{right:24px;bottom:24px}}
 .toast{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:60;background:#f1f1f1;color:#111;border-radius:999px;padding:12px 20px;font-size:14px;font-weight:650;max-width:calc(100% - 32px);box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:center}
 select{background:#0f0f10;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;font-size:16px}
 .moods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
@@ -223,6 +243,14 @@ select{background:#0f0f10;color:var(--text);border:1px solid var(--line);border-
 
 <div class="quote">“以后每个值得纪念的日子，都有我们。”</div>
 <footer class="footer">Miki × Link · MADE WITH LOVE<br><span id="whoami"></span></footer>
+<button class="catfab" id="catFab" type="button" aria-label="和三月聊聊"><img src="data:image/jpeg;base64,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" alt="三月"></button>
+<section class="catpanel" id="catPanel" hidden aria-label="三月小猫助手">
+  <div class="cathead"><img src="data:image/jpeg;base64,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" alt=""><div><b>三月</b><small>Link 和 Miki 家的小猫</small></div><button class="btn ghost" id="catClose" type="button">关闭</button></div>
+  <div class="catlog" id="catLog"></div>
+  <div class="catchips" id="catChips"></div>
+  <form class="catform" id="catForm" novalidate><input id="catInput" placeholder="跟三月说点什么…" maxlength="100" autocomplete="off"><button class="btn" type="submit">发送</button></form>
+  <div class="catnote">三月是网站里的小猫助手，只会回答固定的内容，不是真人也不是自由聊天的 AI。</div>
+</section>
 </main>
 
 <div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
@@ -750,14 +778,18 @@ select{background:#0f0f10;color:var(--text);border:1px solid var(--line);border-
   }
 
   /* ---------- 里程碑 / 下次见面 ---------- */
-  function renderMiles() {
+  function upcomingMiles(limit) {
     var S = startDate(), T = fromYmd(todayStr()), list = [];
     [100, 200, 300, 500, 520, 666, 1000, 1314, 1500, 2000, 3000].forEach(function (n) { list.push({ name: '在一起满 ' + n + ' 天', date: addDays(S, n) }); });
     for (var y = 1; y <= 10; y++) list.push({ name: '在一起 ' + y + ' 周年', date: new Date(S.getFullYear() + y, S.getMonth(), S.getDate()) });
-    list = list.filter(function (x) { return x.date >= T; }).sort(function (a, b) { return a.date - b.date; }).slice(0, 4);
+    list = list.filter(function (x) { return x.date >= T; }).sort(function (a, b) { return a.date - b.date; }).slice(0, limit);
+    list.forEach(function (x) { x.left = Math.round((x.date - T) / 86400000); });
+    return list;
+  }
+  function renderMiles() {
     var box = $('miles'); box.textContent = '';
-    list.forEach(function (x) {
-      var left = Math.round((x.date - T) / 86400000), row = el('div', 'event');
+    upcomingMiles(4).forEach(function (x) {
+      var left = x.left, row = el('div', 'event');
       var date = el('div', 'date'); date.appendChild(el('b', null, pad(x.date.getMonth() + 1) + '/' + pad(x.date.getDate()))); date.appendChild(el('small', null, String(x.date.getFullYear())));
       var main = el('div', 'itemmain'); main.appendChild(el('strong', null, x.name));
       row.append(date, main, el('span', 'remaining', left === 0 ? 'TODAY' : 'IN ' + left + ' DAYS'));
@@ -841,6 +873,110 @@ select{background:#0f0f10;color:var(--text);border:1px solid var(--line);border-
   };
   $('schTitle').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('schAdd').click(); } });
   setInterval(function () { if (me) { renderMiles(); renderMeet(); renderMoods(); renderSched(); } }, 60000);
+
+
+  /* ---------- 三月（小猫助手，固定话术，不联网） ---------- */
+  var catOpen = false, catBusy = false, catGreeted = false;
+  var CAT_IMG = document.querySelector('#catFab img').src;
+  var CHIPS = ['我们在一起多久了', '今天有什么安排', '下一个纪念日', '今天心情', '约会点子', '说句情话'];
+  var DATE_IDEAS = ['找一家没去过的小店，各点一样对方没吃过的东西。', '带上零食去公园，找个草地坐一下午，不看手机。', '一起做一顿饭，规则是谁也不许看菜谱的第二遍。', '晚上散步，走到哪算哪，路上互相问三个以前没问过的问题。', '看一部两个人都没看过的电影，看完各自打分再吵一架。', '去海边或河边看日落，带一条毯子。', '在家搭个小电影院：被子、投影或平板、爆米花。', '逛一次菜市场或超市，互相挑一样东西当晚餐的主角。', '一起拍一组合照，每人指定五个姿势。', '去书店，各挑一本送给对方，写一句话在扉页。', '做一个“一年后的我们”小盒子，写信放进去，约好哪天打开。'];
+  var LOVE_LINES = ['和你在一起的每一天，都是我最喜欢的日子。', '我不确定未来会怎样，但我很确定我想和你一起走。', '今天也很想你，想得比昨天多一点点。', '你是我下班后最想见到的人。', '有你在，普通的日子也会发光。', '谢谢你出现在我的生活里，它因此变得很好玩。', '如果可以选，我还是想先遇见你。', '你笑起来的时候，我整天的疲惫都没了。', '我会一直在，你累了就靠一下。'];
+  var JOKES = ['为什么猫不爱上网？因为它们怕被“老鼠”点击。', '我昨天决定减肥，今天就把碗舔干净了。减的是碗里的。', '猫的人生哲学：能躺着，绝不坐着；能坐着，绝不站着。', '我不是在发呆，我是在等一只只有我看得到的虫子。'];
+  var COMFORT = ['听起来你今天不太好受。先抱一下，喵。', '辛苦啦。今天先不用逞强，吃点好吃的，早点休息。', '你已经做得很好了，真的。要不要把心情记下来，让对方也知道？'];
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function meow(t) { return Math.random() < 0.35 ? t + ' 喵~' : t; }
+  function who(s) { return s.scope === 'both' ? '一起' : (s.created_by === me.id ? '我' : otherName()); }
+  function dayPlan(day, label) {
+    var items = sched.filter(function (s) { return s.day === day; }).sort(function (a, b) { return (a.at_time || '99').localeCompare(b.at_time || '99'); });
+    if (!items.length) return label + '还没有安排。要不要去日程表加一条？';
+    var done = items.filter(function (s) { return s.done; }).length;
+    return label + '有 ' + items.length + ' 件事（已完成 ' + done + '）：\n' + items.slice(0, 6).map(function (s) {
+      return (s.at_time ? String(s.at_time).slice(0, 5) + ' ' : '') + s.title + '（' + who(s) + '）' + (s.done ? ' ✓' : '');
+    }).join('\n') + (items.length > 6 ? '\n……还有 ' + (items.length - 6) + ' 件' : '');
+  }
+  function goTo(id, focus) { $('catPanel').hidden = true; catOpen = false; var n = $(id); if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (focus) setTimeout(function () { n.focus(); }, 400); } }
+  function catReply(raw) {
+    var q = raw.trim().toLowerCase(), o = otherName(), t = todayStr(), T = fromYmd(t);
+    function has(re) { return re.test(q); }
+    if (has(/晚安/)) return { text: meow('晚安，好梦。今天也辛苦啦。') };
+    if (has(/早安|早上好|早啊/)) return { text: meow('早安！今天也要好好吃饭。') };
+    if (has(/想你|想(miki|link|ta|她|他)|想见/)) return { text: '那就别憋着呀。我可以帮你告诉 ' + o + '：想你了。', actions: [{ label: '发送“想你了 ♥”', fn: function () { $('missBtn').click(); } }] };
+    if (has(/难过|不开心|心情不好|心情差|好烦|很烦|心烦|烦死|好累|很累|太累|累死|委屈|想哭|崩溃|焦虑|压力|郁闷/)) return { text: pick(COMFORT), actions: [{ label: '去记录心情', fn: function () { goTo('moodPick'); } }, { label: '给 ' + o + ' 留言', fn: function () { goTo('noteInput', true); } }] };
+    if (has(/吵架|生气|冷战|对不起|道歉|和好|闹别扭/)) return { text: '先深呼吸，喝口水，不用急着分对错。\n等情绪降下来，可以轮流说三句话：我感到……，因为……，我希望……。\n需要的话，你可以先写一句软的话给 ' + o + '。', actions: [{ label: '去写悄悄话', fn: function () { goTo('noteInput', true); } }] };
+    if (has(/在一起|几天|多久|天数|第几天/)) {
+      var d = Math.floor((new Date() - startDate()) / 86400000), n = upcomingMiles(1)[0];
+      if (d < 0) return { text: '还没到在一起的日子呢，还有 ' + (-d) + ' 天。' };
+      return { text: meow('你们已经在一起 ' + d + ' 天啦（从 ' + state.start + ' 开始）。') + (n ? '\n离「' + n.name + '」还有 ' + n.left + ' 天。' : '') };
+    }
+    if (has(/纪念日|里程碑|周年|下一个|还有几天|还有多久/)) {
+      var l = upcomingMiles(3);
+      return { text: '接下来的日子：\n' + l.map(function (x) { return x.name + '：' + (x.left === 0 ? '就是今天！' : '还有 ' + x.left + ' 天（' + ymdOf(x.date) + '）'); }).join('\n') };
+    }
+    if (has(/见面|什么时候见|下次见/)) {
+      if (!state.nextMeet) return { text: '还没设定见面的日子。去“里程碑”卡片设一个，我陪你倒数。', actions: [{ label: '去设置', fn: function () { goTo('meetDate'); } }] };
+      var ml = Math.round((fromYmd(state.nextMeet) - T) / 86400000);
+      return { text: ml > 0 ? '下次见面是 ' + state.nextMeet + (state.meetNote ? '，' + state.meetNote : '') + '，还有 ' + ml + ' 天。' : ml === 0 ? '就是今天见面！' : '上次设的见面日已经过了，可以再设一个新的。' };
+    }
+    if (has(/明天/) && has(/日程|安排|计划|做什么|干什么|事/)) return { text: dayPlan(ymdOf(addDays(T, 1)), '明天') };
+    if (has(/日程|安排|计划|做什么|干什么|待办/)) return { text: dayPlan(t, '今天'), actions: [{ label: '去日程表', fn: function () { goTo('schTitle'); } }] };
+    if (has(/心情/)) {
+      var mine = (moods[me.id] || {})[t], oid = otherId(), oth = (oid && moods[oid] || {})[t];
+      return { text: '我看看……\n你今天：' + (mine ? moodLine(mine) : '还没写') + '\n' + o + ' 今天：' + (oth ? moodLine(oth) : '还没写'), actions: mine ? null : [{ label: '去记录', fn: function () { goTo('moodPick'); } }] };
+    }
+    if (has(/约会|去哪|玩什么|周末|吃什么|吃啥|干嘛|无聊/) && !has(/笑话/)) return { text: meow('约会点子：\n' + pick(DATE_IDEAS)) };
+    if (has(/情话|好听|哄|土味|表白|甜/)) { var line = pick(LOVE_LINES); return { text: line, actions: [{ label: '放进悄悄话', fn: function () { $('noteInput').value = line; goTo('noteInput', true); } }] }; }
+    if (has(/照片|相册|视频/)) { var v = photos.filter(function (p) { return p.kind === 'video'; }).length; return { text: '相册里现在有 ' + (photos.length - v) + ' 张照片、' + v + ' 个视频。', actions: [{ label: '去相册', fn: function () { goTo('photos'); } }] }; }
+    if (has(/位置|在哪|距离|多远/)) {
+      var ol = null; Object.keys(locs).forEach(function (k) { if (k !== me.id) ol = locs[k]; });
+      var ml2 = locs[me.id];
+      if (valid(ol) && valid(ml2)) return { text: meow('你们现在相距 ' + fmtDist(dist(ml2, ol)) + '。') };
+      if (valid(ol)) return { text: o + ' 开着位置分享，你开启后就能看到距离了。' };
+      return { text: o + ' 现在没有开启位置分享。位置只在对方主动开启时才会显示。' };
+    }
+    if (has(/笑话|讲个|逗我/)) return { text: pick(JOKES) };
+    if (has(/谢谢|感谢|辛苦/)) return { text: meow('不客气，应该的。') };
+    if (has(/你是谁|你叫|介绍|会什么|能做什么|帮助|怎么用|功能/)) return { text: '我是三月，Link 和 Miki 家的小猫，住在这个网站里。\n我能告诉你：在一起多久、下一个纪念日、今天的日程、你们的心情、见面倒计时，还能出约会点子和说情话。\n点下面的小按钮就行。' };
+    if (has(/^(你好|嗨|哈喽|hi|hello|hey|喵|在吗|在不在|三月)/)) return { text: pick(['喵~ 我在。', '喵？叫我吗。', '在呢，有什么事？', '喵喵~ 今天过得怎么样？']) };
+    return { text: pick(['喵？这个我还不会。我只会回答固定的问题，点下面的按钮试试。', '这个我听不懂，我是只很简单的小猫。试试问我“今天有什么安排”？', '喵……这超出三月的小脑袋了。可以问我在一起多久、纪念日、日程或心情。']) };
+  }
+  function catRow(text, mine, actions) {
+    var row = el('div', 'cl-row' + (mine ? ' mine' : ''));
+    if (!mine) { var im = document.createElement('img'); im.src = CAT_IMG; im.alt = ''; row.appendChild(im); }
+    var b = el('div', null); var bub = el('div', 'cl-bub', text); b.appendChild(bub);
+    if (actions && actions.length) {
+      var ac = el('div', 'cl-act');
+      actions.forEach(function (a) { var bt = el('button', null, a.label); bt.type = 'button'; bt.onclick = a.fn; ac.appendChild(bt); });
+      b.appendChild(ac);
+    }
+    row.appendChild(b); $('catLog').appendChild(row); $('catLog').scrollTop = $('catLog').scrollHeight;
+    return row;
+  }
+  function sendCat(text) {
+    text = String(text || '').trim(); if (!text || catBusy) return;
+    catRow(text, true); catBusy = true;
+    var typing = catRow('…', false);
+    setTimeout(function () {
+      typing.remove();
+      var r; try { r = catReply(text); } catch (e) { r = { text: '喵？我刚刚走神了，再说一次？' }; }
+      catRow(r.text, false, r.actions); catBusy = false;
+    }, 450 + Math.random() * 400);
+  }
+  function fitCat() {
+    var p = $('catPanel');
+    if (p.hidden) return;
+    if (window.innerWidth <= 680 && window.visualViewport) { p.style.height = window.visualViewport.height + 'px'; p.style.top = window.visualViewport.offsetTop + 'px'; }
+    else { p.style.height = ''; p.style.top = ''; }
+  }
+  function openCat() {
+    catOpen = true; $('catPanel').hidden = false; fitCat();
+    if (!catGreeted) { catGreeted = true; catRow('喵~ 我是三月。想聊聊你们的日子，还是想想去哪玩？', false); }
+  }
+  $('catFab').onclick = openCat;
+  $('catClose').onclick = function () { catOpen = false; $('catPanel').hidden = true; };
+  $('catForm').addEventListener('submit', function (e) { e.preventDefault(); var v = $('catInput').value; $('catInput').value = ''; sendCat(v); });
+  CHIPS.forEach(function (c) { var b = el('button', null, c); b.type = 'button'; b.onclick = function () { sendCat(c); }; $('catChips').appendChild(b); });
+  if (window.visualViewport) { window.visualViewport.addEventListener('resize', fitCat); window.visualViewport.addEventListener('scroll', fitCat); }
+  window.addEventListener('resize', fitCat);
 
   /* ---------- 实时同步 ---------- */
   function subscribe() {
